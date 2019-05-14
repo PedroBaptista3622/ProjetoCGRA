@@ -20,6 +20,9 @@ class MyScene extends CGFscene {
         this.gl.depthFunc(this.gl.LEQUAL);
         this.enableTextures(true);
         this.setUpdatePeriod(50); // <=> T; T = 1(sec) / f (frames per second)  <------- Aproximação; N deve ser usado para controlar taxa de atualização da cena.
+        
+        //My scene frames per second; Used in interface;
+        this.fps = 20;
 
         //Initialize scene objects
         this.axis = new CGFaxis(this);
