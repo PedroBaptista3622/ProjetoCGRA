@@ -25,6 +25,12 @@ class MyScene extends CGFscene {
         this.axis = new CGFaxis(this);
         this.plane = new Plane(this, 32);
 
+        this.map = new MyCubeMap(this, 'images/CubeMapDay.png', 60);
+        this.semisphere = new MySemiSphere(this, 10, 10);
+        this.bird = new MyBird(this, 0, 0);
+        this.test = new MyCylinder(this, 5, 1);
+        this.quad = new MyQuad(this);
+
         //Objects connected to MyInterface
     }
     initLights() {
@@ -34,7 +40,7 @@ class MyScene extends CGFscene {
         this.lights[0].update();
     }
     initCameras() {
-        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(45, 45, 45), vec3.fromValues(0, 0, 0));
+        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
     }
     setDefaultAppearance() {
         this.setAmbient(0.2, 0.4, 0.8, 1.0);
@@ -67,7 +73,20 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.rotate(-0.5*Math.PI, 1, 0, 0);
         this.scale(60, 60, 1);
-        this.plane.display();
+        //this.plane.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.scale(1/3, 1/3, 1/3);
+        this.bird.display();
+        this.popMatrix();
+
+        this.map.display();
+
+        this.pushMatrix();
+        this.scale(3, 1, 2);
+        this.rotate(Math.PI/2, 1, 0, 0);
+        this.quad.display();
         this.popMatrix();
         // ---- END Primitive drawing section
     }
