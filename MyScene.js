@@ -5,6 +5,9 @@
 class MyScene extends CGFscene {
     constructor() {
         super();
+
+    this.lastUpdateTime = 0;
+    this.deltaTime;
     }
     init(application) {
         super.init(application);
@@ -21,6 +24,7 @@ class MyScene extends CGFscene {
         this.enableTextures(true);
         this.setUpdatePeriod(50); // <=> T; T = 1(sec) / f (frames per second)  <------- Aproximação; N deve ser usado para controlar taxa de atualização da cena.
         
+
         //My scene frames per second; Used in interface;
         this.fps = 20;
 
@@ -30,18 +34,23 @@ class MyScene extends CGFscene {
 
         this.map = new MyCubeMap(this, 'images/CubeMapDay.png', 60);
         this.semisphere = new MySemiSphere(this, 10, 10);
-        this.bird = new MyBird(this, 0, 0);
+        this.bird = new MyBird(this, 0, 3, 0);
         this.test = new MyCylinder(this, 5, 1);
         this.quad = new MyQuad(this);
 
         //Objects connected to MyInterface
+
     }
+        
+
     initLights() {
         this.lights[0].setPosition(15, 2, 5, 1);
         this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
         this.lights[0].enable();
         this.lights[0].update();
     }
+
+
     initCameras() {
         this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
     }
@@ -51,8 +60,55 @@ class MyScene extends CGFscene {
         this.setSpecular(0.2, 0.4, 0.8, 1.0);
         this.setShininess(10.0);
     }
-    update(t){
 
+
+    checkKeys() {
+        var text="Keys pressed: ";
+        var keysPressed=false;
+
+        // Check for key codes e.g. in https://keycode.info/
+        if (this.gui.isKeyPressed("KeyW")) {
+            text+=" W ";
+            keysPressed=true;
+            this.bird.speed += 0.04;
+        }
+
+        if (this.gui.isKeyPressed("KeyS")) {
+            text+=" S ";
+            keysPressed=true;
+            this.bird.speed -= 0.04;
+        }
+
+        if(this.gui.isKeyPressed("KeyA")) {
+            text+=" A ";
+            keysPressed=true;
+            this.bird.orientation += 0.1;
+        }
+
+        if(this.gui.isKeyPressed("KeyD")) {
+            text+=" D";
+            keysPressed=true;
+            this.bird.orientation -= 0.1;
+        }
+
+        if (keysPressed)
+            console.log(text);
+    }
+
+
+    move()
+    {
+
+    }
+
+        
+    update(t){
+        this.lastUpdateTime = this.lastUpdateTime || 0;
+        this.deltaTime = t - this.lastUpdateTime;
+        this.lastUpdateTime = t;
+        this.bird.update(t, this.deltaTime); 
+
+        this.checkKeys();
     }
 
     display() {
@@ -73,6 +129,7 @@ class MyScene extends CGFscene {
         this.setDefaultAppearance();
 
         // ---- BEGIN Primitive drawing section
+
         this.pushMatrix();
         this.rotate(-0.5*Math.PI, 1, 0, 0);
         this.scale(60, 60, 1);
@@ -84,12 +141,16 @@ class MyScene extends CGFscene {
         this.bird.display();
         this.popMatrix();
 
-        this.map.display();
 
-        this.pushMatrix();
+
+        /*this.pushMatrix();
         this.scale(3, 1, 2);
         this.rotate(Math.PI/2, 1, 0, 0);
         this.quad.display();
+        this.popMatrix();*/
+
+        this.pushMatrix();
+        this.map.display();
         this.popMatrix();
         // ---- END Primitive drawing section
     }
