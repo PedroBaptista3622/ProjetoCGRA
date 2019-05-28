@@ -2,11 +2,16 @@ class MyBird extends CGFobject {
     constructor(scene, xCoord, yCoord, zCoord)
     {        
         super(scene);       
+
+        this.xi = xCoord;
+        this.yi = yCoord;
+        this.zi = zCoord;
+
         this.x = xCoord;
         this.y = yCoord;
         this.z = zCoord;
 
-        this.speed = 0;
+        this.speed = 0.1;
         this.orientation = 0;
 
         this.semiSphere = new MySemiSphere(scene, 20, 1);
@@ -22,8 +27,11 @@ class MyBird extends CGFobject {
     {
         if(t > 0)
         {
-            this.height = Math.sin(t/300);
-            this.ang = Math.sin(t/300);
+            this.height = Math.sin(t/500*Math.PI);
+            if(this.speed == 0)
+                this.ang = Math.sin(t/500*Math.PI);
+            else
+                this.ang = Math.sin(t/(500*(1/this.speed*65)));
         }
 
         //this.scene.rotate(this.orientation, 0, 1, 0);
@@ -34,13 +42,13 @@ class MyBird extends CGFobject {
         //-----------------------------------------------------
         
         this.update();
-        this.accelarate();
+        this.accelarate(this.speed);
+
 
         this.scene.pushMatrix();
             this.scene.translate(this.x, this.height + this.y, this.z);
-            this.scene.rotate(this.orientation, 0, 1, 0);
-            
-            
+            this.turn(this.speed);
+
             // Cabeca
             this.scene.pushMatrix();
                 this.scene.translate(0, 0.5, 2);
@@ -157,14 +165,24 @@ class MyBird extends CGFobject {
 
     turn(v)
     {
-        
+        this.scene.rotate(this.orientation, 0, 1, 0);
     }
 
 
     accelarate(v)
     {
-        this.x += this.speed * Math.sin(this.orientation);
-        this.z += this.speed * Math.cos(this.orientation);
+        this.x += v*0.1 * Math.sin(this.orientation);
+        this.z += v*0.1 * Math.cos(this.orientation);
+    }
+
+
+    reset()
+    {
+        this.x = this.xi;
+        this.y = this.yi;
+        this.z = this.zi;
+        this.speed = 0;
+        this.orientation = 0;
     }
 
 

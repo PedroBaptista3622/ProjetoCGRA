@@ -91,6 +91,12 @@ class MyScene extends CGFscene {
             this.bird.orientation -= 0.1;
         }
 
+        if(this.gui.isKeyPressed("KeyR")) {
+            text+=" R ";
+            keysPressed=true;
+            this.bird.reset();
+        }
+
         if (keysPressed)
             console.log(text);
     }
@@ -105,9 +111,13 @@ class MyScene extends CGFscene {
     update(t){
         this.lastUpdateTime = this.lastUpdateTime || 0;
         this.deltaTime = t - this.lastUpdateTime;
-        this.lastUpdateTime = t;
-        this.bird.update(t, this.deltaTime); 
 
+        if(this.deltaTime >= 1000/this.fps)
+        {
+            this.bird.update(t, this.deltaTime); 
+            this.lastUpdateTime = t;
+        }
+        
         this.checkKeys();
     }
 
