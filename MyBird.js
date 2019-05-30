@@ -15,7 +15,7 @@ class MyBird extends CGFobject {
         this.orientation = 0;
 
         this.semiSphere = new MySemiSphere(scene, 20, 1);
-        this.quad = new MyQuad(scene);
+        this.quad = new MyQuad(scene, 1, 1);
         this.triangle = new MyTriangleSmall(scene);
         this.cone = new MyCone(scene, 20, 1);
 
@@ -23,31 +23,34 @@ class MyBird extends CGFobject {
         this.ang;
     }
 
-    update(t, deltaT)
+    update(t)
     {
+        this.timeFactor = t/500*Math.PI;
         if(t > 0)
         {
-            this.height = Math.sin(t/500*Math.PI);
-            if(this.speed == 0)
-                this.ang = Math.sin(t/500*Math.PI);
-            else
-                this.ang = Math.sin(t/(500*(1/this.speed*65)));
+            this.height = Math.sin(this.timeFactor);
+            //if(this.speed == 0)
+                //this.ang = Math.sin(t/500*Math.PI);
+            //else
+                //this.ang = Math.sin(t/(500*(1/this.speed*65)));
         }
 
-        //this.scene.rotate(this.orientation, 0, 1, 0);
+        this.z += this.speed * Math.cos(this.orientation);
+        this.x += this.speed * Math.sin(this.orientation);
     }
     
     display() {
         
         //-----------------------------------------------------
         
-        this.update();
-        this.accelarate(this.speed);
+        //this.update();
+        //this.accelarate(this.speed);
 
 
         this.scene.pushMatrix();
             this.scene.translate(this.x, this.height + this.y, this.z);
-            this.turn(this.speed);
+            //this.turn(this.speed);
+            this.scene.rotate(this.orientation, 0, 1, 0);
 
             // Cabeca
             this.scene.pushMatrix();
@@ -78,8 +81,7 @@ class MyBird extends CGFobject {
             this.scene.pushMatrix();
 
                 this.scene.translate(0.75, 0, 0);
-                this.scene.rotate(-Math.PI/((1.5+this.ang)*3), 0, 0, 1);
-                this.scene.rotate(Math.PI/3, 0, 0, 1);
+                this.scene.rotate(-Math.PI / 3 * Math.sin(this.timeFactor * (0.5 + this.speed)), 0, 0, 1);
                 this.scene.translate(-0.75, 0, 0);
                 
                 this.scene.pushMatrix();
@@ -106,8 +108,7 @@ class MyBird extends CGFobject {
             this.scene.pushMatrix();
             
                 this.scene.translate(-0.75, 0, 0);
-                this.scene.rotate(Math.PI/((1.5+this.ang)*3), 0, 0, 1);
-                this.scene.rotate(-Math.PI/3, 0, 0, 1);
+                this.scene.rotate(Math.PI / 3 * Math.sin(this.timeFactor * (0.5 + this.speed)), 0, 0, 1);
                 this.scene.translate( 0.75, 0, 0);
                 
                 this.scene.pushMatrix();
@@ -162,19 +163,15 @@ class MyBird extends CGFobject {
 
     }
 
-
     turn(v)
     {
-        this.scene.rotate(this.orientation, 0, 1, 0);
+        this.orientation += v;
     }
 
-
-    accelarate(v)
+    accelerate(v)
     {
-        this.x += v*0.1 * Math.sin(this.orientation);
-        this.z += v*0.1 * Math.cos(this.orientation);
+        this.speed += v;
     }
-
 
     reset()
     {
@@ -185,6 +182,10 @@ class MyBird extends CGFobject {
         this.orientation = 0;
     }
 
+    tryCatchNest()
+    {
+        
+    }
 
     updateBuffers(){}
 }

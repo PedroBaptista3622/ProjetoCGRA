@@ -42,8 +42,8 @@ class MyInterface extends CGFinterface {
         this.gui = new dat.GUI();
         
         this.gui.add(this.scene, 'fps', 10, 60).name('FPS').step(5); //FPS Controll
-        this.gui.add(this.scene.bird, 'speed', 0.1, 3).name("speedFactor").step(0.1);
-        //this.gui.add(this.bird, 'scaleFactor', 0.5, 3).name("scaleFactor").step(0.5);
+        this.gui.add(this.scene.bird, 'speed', 0.1, 3).name("Speed");
+        this.gui.add(this.scene, 'scaleFactor', 0.5, 3).name("Scale").step(0.5);
 
         var obj = this;
 

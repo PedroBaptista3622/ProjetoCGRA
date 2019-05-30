@@ -23,7 +23,34 @@ class MyScene extends CGFscene {
         this.gl.depthFunc(this.gl.LEQUAL);
         this.enableTextures(true);
         this.setUpdatePeriod(50); // <=> T; T = 1(sec) / f (frames per second)  <------- Aproximação; N deve ser usado para controlar taxa de atualização da cena.
-        
+
+        this.axiom = "X";
+        this.ruleF = "FF";
+        this.ruleX = [];
+        this.ruleX.push("F[-X][X]F[-X]+FX");
+        this.ruleX.push("F[-X][X]F[-X]+X");
+        this.ruleX.push("F[-X][x]+FX");
+        this.ruleX.push("F[+X]-X");
+
+        this.angle = 25.0;
+        this.iterations = 3;
+        this.scaleFactor = 0.5;
+        this.lSystem = new MyLightning(this);
+
+        this.doGenerate = function () {
+            this.lSystem.generate(
+                this.axiom,
+                {
+                    "F": [ this.ruleF ],
+                    "X":  this.ruleX 
+                },
+                this.angle,
+                this.iterations,
+                this.scaleFactor
+            );
+        }
+
+        this.doGenerate();
 
         //My scene frames per second; Used in interface;
         this.fps = 20;
@@ -33,13 +60,20 @@ class MyScene extends CGFscene {
         this.plane = new Plane(this, 32);
 
         this.map = new MyCubeMap(this, 'images/CubeMapDay.png', 60);
-        this.semisphere = new MySemiSphere(this, 10, 10);
         this.bird = new MyBird(this, 0, 3, 0);
-        this.test = new MyCylinder(this, 5, 1);
-        this.quad = new MyQuad(this);
+        this.terrain = new MyTerrain(this);
+        this.nest = new MyNest(this);
+        this.treeBranches = [];
+        this.treeBranches.push(new MyTreeBranch(this));
+        this.treeBranches.push(new MyTreeBranch(this));
+        this.treeBranches.push(new MyTreeBranch(this));
+        this.treeBranches.push(new MyTreeBranch(this));
+        this.treeBranches.push(new MyTreeBranch(this));
+
 
         //Objects connected to MyInterface
-
+        this.displayAxis = true;
+        this.scaleFactor = 1.0;
     }
         
 
@@ -52,7 +86,7 @@ class MyScene extends CGFscene {
 
 
     initCameras() {
-        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
+        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(100, 100, 100), vec3.fromValues(0, 0, 0));
     }
     setDefaultAppearance() {
         this.setAmbient(0.2, 0.4, 0.8, 1.0);
@@ -70,25 +104,27 @@ class MyScene extends CGFscene {
         if (this.gui.isKeyPressed("KeyW")) {
             text+=" W ";
             keysPressed=true;
-            this.bird.speed += 0.04;
+            if(this.bird.speed < 3)
+                this.bird.accelerate(0.1);
         }
 
         if (this.gui.isKeyPressed("KeyS")) {
             text+=" S ";
             keysPressed=true;
-            this.bird.speed -= 0.04;
+            if(this.bird.speed > 0)
+                this.bird.accelerate(-0.1);
         }
 
         if(this.gui.isKeyPressed("KeyA")) {
             text+=" A ";
             keysPressed=true;
-            this.bird.orientation += 0.1;
+            this.bird.turn(Math.PI/10+this.bird.speed*0.1);
         }
 
         if(this.gui.isKeyPressed("KeyD")) {
             text+=" D";
             keysPressed=true;
-            this.bird.orientation -= 0.1;
+            this.bird.turn(-Math.PI/10-this.bird.speed*0.1);
         }
 
         if(this.gui.isKeyPressed("KeyR")) {
@@ -97,14 +133,20 @@ class MyScene extends CGFscene {
             this.bird.reset();
         }
 
+        if(this.gui.isKeyPressed("KeyP")) {
+            text+=" P ";
+            keysPressed=true;
+            this.bird.tryCatchNest();
+        }
+
+        if(this.gui.isKeyPressed("KeyL")) {
+            text+=" L ";
+            keysPressed=true;
+            this.doGenerate();
+        }
+
         if (keysPressed)
             console.log(text);
-    }
-
-
-    move()
-    {
-
     }
 
         
@@ -114,7 +156,7 @@ class MyScene extends CGFscene {
 
         if(this.deltaTime >= 1000/this.fps)
         {
-            this.bird.update(t, this.deltaTime); 
+            this.bird.update(t); 
             this.lastUpdateTime = t;
         }
         
@@ -138,30 +180,32 @@ class MyScene extends CGFscene {
         //Apply default appearance
         this.setDefaultAppearance();
 
+
         // ---- BEGIN Primitive drawing section
 
-        this.pushMatrix();
-        this.rotate(-0.5*Math.PI, 1, 0, 0);
-        this.scale(60, 60, 1);
-        //this.plane.display();
-        this.popMatrix();
+        
 
         this.pushMatrix();
         this.scale(1/3, 1/3, 1/3);
+        this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
         this.popMatrix();
 
-
-
-        /*this.pushMatrix();
-        this.scale(3, 1, 2);
-        this.rotate(Math.PI/2, 1, 0, 0);
-        this.quad.display();
-        this.popMatrix();*/
+        this.nest.display();
 
         this.pushMatrix();
-        this.map.display();
+        this.scale(1, 1, 1);
+        this.lSystem.display();
         this.popMatrix();
+
+        /*for(var i = 0; i < this.treeBranches.length; i++)
+        {
+            this.treeBranches[i].display();
+        }*/
+
+        this.terrain.display();
+
+
         // ---- END Primitive drawing section
     }
 }
