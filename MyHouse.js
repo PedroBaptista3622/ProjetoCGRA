@@ -85,13 +85,17 @@ class MyHouse extends CGFobject {
         this.roof = new MyPyramid(scene, 4, 1);
         this.prism = new MyPrism(scene, 10, 1);
         this.roof2 = new MyPyramid(scene, 3, 1);
-        this.door = new MyQuad(scene);
+        this.door = new MyQuad(scene, 1, 1);
     }
 
     display() {
         
         //-----------------------------------------------------
         
+        this.scene.pushMatrix();
+
+        this.scene.translate(0, 5.2, 0);
+
         // Cubo
         this.scene.pushMatrix();
         this.scene.translate(this.x, 0, this.z);
@@ -104,10 +108,7 @@ class MyHouse extends CGFobject {
         this.scene.pushMatrix();
         this.roof1.apply();
 
-        if(this.scene.displayTextures)
-            this.roof1.setTexture(this.roofTex);
-        else
-            this.roof1.setTexture();
+        this.roof1.setTexture(this.roofTex);
 
         this.scene.translate(this.x, 3, this.z);
         this.scene.scale(6, 2.5, 3.5);
@@ -118,10 +119,8 @@ class MyHouse extends CGFobject {
         // Coluna 1
         this.scene.pushMatrix();
         this.pillar.apply();
-        if(this.scene.displayTextures)
-            this.pillar.setTexture(this.pillarTex);
-        else
-            this.pillar.setTexture();
+        
+        this.pillar.setTexture(this.pillarTex);
             
         this.scene.translate(3.5+this.x, 0, 2+this.z);
         this.scene.scale(0.25, 3, 0.25);
@@ -153,12 +152,9 @@ class MyHouse extends CGFobject {
         this.scene.pushMatrix();
         this.doorM.apply();
 
-        if(this.scene.displayTextures)
-            this.doorM.setTexture(this.doorTex);
-        else
-            this.doorM.setTexture();
+        this.doorM.setTexture(this.doorTex);
 
-        this.scene.translate(this.x, 1, this.z + 1.51);
+        this.scene.translate(this.x-0.5*3.2, 1, this.z + 1.51);
         this.scene.scale(3.2, 2, 1);
         this.door.display();
         this.scene.popMatrix();
@@ -168,15 +164,15 @@ class MyHouse extends CGFobject {
         this.scene.pushMatrix();
         this.windowM.apply();
 
-        if(this.scene.displayTextures)
-            this.windowM.setTexture(this.windowTex);
-        else
-            this.windowM.setTexture();
+        this.windowM.setTexture(this.windowTex);
 
+        this.scene.translate(15, 0, -14.25);
         this.scene.rotate(Math.PI / 2, 0, 1, 0);
         this.scene.translate(this.x, 1.75, this.z + 3.01);
         this.scene.scale(1.5, 1.75, 1);
         this.door.display();
+        this.scene.popMatrix();
+
         this.scene.popMatrix();
         
 

@@ -5,18 +5,19 @@ class MyTreeBranch extends CGFobject{
 
         this.cylinder = new MyCylinder(this.scene, 10, 1);
 
-        this.x = (Math.random()-0.5) * 10;
-        this.z = (Math.random()-0.5) * 10;
+        this.x = (Math.random()-0.5) * 15;
+        this.y = 6;
+        this.z = -3 + (Math.random()-0.5) * 15;
         this.rotation = (Math.random() * 2 * Math.PI);
 
         this.appearance = new CGFappearance(this.scene);
-        this.appearance.setAmbient(1, 1, 1, 1.0);
-        this.appearance.setDiffuse(1, 1, 1, 1.0);
-        this.appearance.setSpecular(1, 1, 1, 1.0);
+        this.appearance.setAmbient(0.5, 0.5, 0.5, 1.0);
+        this.appearance.setDiffuse(0.5, 0.5, 0.5, 1.0);
+        this.appearance.setSpecular(0.5, 0.5, 0.5, 1.0);
         this.appearance.setShininess(120);
-        //this.texture = new CGFtexture(this.scene, "images/terrain.jpg");
+        this.texture = new CGFtexture(this.scene, "images/wood.jpg");
         this.appearance.setTextureWrap('REPEAT', 'REPEAT');
-        //this.appearance.setTexture(this.texture);
+        this.appearance.setTexture(this.texture);
 
     }
 
@@ -24,7 +25,7 @@ class MyTreeBranch extends CGFobject{
     {        
         this.scene.pushMatrix();
             this.appearance.apply();
-            this.scene.translate(this.x, 0, this.z);
+            this.scene.translate(this.x, this.y, this.z);
             this.scene.rotate(this.rotation, 0, 1, 0);
             this.scene.rotate(Math.PI/2, 1, 0, 0);
             this.scene.scale(0.05, 1, 0.05);

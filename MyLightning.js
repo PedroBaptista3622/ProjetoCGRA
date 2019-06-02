@@ -6,42 +6,82 @@
 class MyLightning extends MyLSystem {
 	constructor(scene) {
         super(scene);
-       
+
+        this.ruleF = "FF";
+        this.ruleX = [];
+        this.ruleX.push("F[-X][X]F[-X]+FX");
+        this.ruleX.push("F[-X][X]F[-X]+X");
+        this.ruleX.push("F[-X][x]+FX");
+        this.ruleX.push("F[+X]-X");
+
+        this.initValues();
+        this.initGrammar();
+
+        this.material = new CGFappearance(scene);
+        this.material.setAmbient(1.0, 1.0, 1.0, 1.0);
+        this.material.setDiffuse(1.0, 1.0, 1.0, 1.0);
+        this.material.setSpecular(1.0, 1.0, 1.0, 1.0);
+        this.material.setShininess(2.0);
+    }
+
+    initValues()
+    {
+        this.axiom = "X";
+        this.angle = 25.0;
+        this.iterations = 3;
+        this.scaleFactor = 0.5;
     }
 
     // cria o lexico da gramática
     initGrammar() {
 
         this.grammar = {
-            "F": new MyQuad(this.scene, 0.2, 1.5),
-            "X": new MyQuad(this.scene, 0.2, 0.5)
+            "F": new MyQuad(this.scene, 0.2, 1),
+            "X": new MyQuad(this.scene, 0.2, 1)
         };
 
     }
 
+    doGenerate()
+    {
+        this.initValues();
+        super.generate(
+            this.axiom,
+            {
+                "F": [ this.ruleF ],
+                "X":  this.ruleX 
+            },
+            this.angle,
+            this.iterations,
+            this.scaleFactor
+        );
+    }
+
     update(t)
     {
-        if(t > 0)
-        {
-            startAnimation(t);
         this.delta = t - this.lastUpdateTime;
-        this.depth = this.axiom.length-(this.delta*this.axiom.length)/1000;
-        }
+        
+        if(this.delta != 0)
+            this.depth = (this.delta*this.axiom.length)/1000;
+
+        if(this.delta >= 1200)
+            return true;
     }
 
     startAnimation(t)
     {
-        this.iterate();
+        this.doGenerate();
+        //this.iterate();
         this.lastUpdateTime = t;
         this.depth = 0;
     }
 
     display()
     {
-        this.update();
-
         this.scene.pushMatrix();
-        this.scene.scale(this.scale, this.scale, this.scale);
+
+        this.material.apply();
+
 
         var i;
 
@@ -88,14 +128,17 @@ class MyLightning extends MyLSystem {
 
                 // processa primitiva definida na gramatica, se existir
                 default:
-                    var primitive=this.grammar[this.axiom[i]];
-                    if ( primitive )
+                    if(i < this.depth)
                     {
-                        if(i < this.depth)
-                        primitive.display();
-                        this.scene.translate(0, 1, 0);
+                        var primitive=this.grammar[this.axiom[i]];
+                            
+                        if ( primitive )
+                        {
+                            primitive.display();
+                            this.scene.translate(0, 1, 0);
+                        }
+                        break;
                     }
-                    break;
             }
         }
         this.scene.popMatrix();
